@@ -11,6 +11,7 @@ import arrow  # Replacement for datetime, based on moment.js
 import acp_times  # Brevet time calculations
 import config
 import sys
+import datetime
 
 import logging
 
@@ -82,7 +83,7 @@ def _calc_times():
     app.logger.debug("km={}".format(km))
     app.logger.debug("brevet={}".format(brevet))
     app.logger.debug("request.args: {}".format(request.args))
-    open_time = acp_times.open_time(km, brevet, beginTimeFinal
+    open_time = acp_times.open_time(km, brevet, beginTimeFinal)
     close_time = acp_times.close_time(km, brevet, beginTimeFinal)
     result = {"open": open_time, "close": close_time, "notes": notes}
     return flask.jsonify(result=result)
@@ -115,6 +116,163 @@ def _load_DB():
             noteses.append(datum['notes'])
     result = {"kms": kms, "miles": miles, "opens": opens, "closes": closes, "noteses": noteses}
     return flask.jsonify(result=result)
+
+@app.route("/listAll")
+def listAll():
+    data = collection.find()
+    opens = []
+    closes = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+            closes.append(datum['close'])
+    html = "<html><body><p>"
+    for i in range(len(opens)):
+        html += " <u>Open</u>: " + opens[i] + " | <u>Close</u>: " + closes[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listOpenOnly")
+def listOpenOnly():
+    data = collection.find()
+    opens = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+    html = "<html><body><p>"
+    for i in range(len(opens)):
+        html += " <u>Open</u>: " + opens[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listCloseOnly")
+def listCloseOnly():
+    data = collection.find()
+    closes = []
+    for datum in data:
+        if len(datum['close']) > 0: # Ignore it if it's a blank one
+            closes.append(datum['close'])
+    html = "<html><body><p>"
+    for i in range(len(closes)):
+        html += " <u>Close</u>: " + closes[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listAll/csv")
+def listAllCSV():
+    data = collection.find()
+    opens = []
+    closes = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+            closes.append(datum['close'])
+    html = "<html><body><p>Open, Close</br>"
+    for i in range(len(opens)):
+        html += opens[i] + ", " + closes[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listOpenOnly/csv")
+def listOpenOnlyCSV():
+    k = request.args.get('top', default = 999, type = int)
+    data = collection.find()
+    opens = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+    if k != 999:
+        opens.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>Open</br>"
+    for i in range(len(opens)):
+        if k == i:
+            break
+        html += opens[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listCloseOnly/csv")
+def listCloseOnlyCSV():
+    k = request.args.get('top', default = 999, type = int)
+    data = collection.find()
+    closes = []
+    for datum in data:
+        if len(datum['close']) > 0: # Ignore it if it's a blank one
+            closes.append(datum['close'])
+    if k != 999:
+        closes.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>Close</br>"
+    for i in range(len(closes)):
+        if k == i:
+            break
+        html += closes[i] + "</br>"
+    html += "</p></body></html>"
+    return html
+
+@app.route("/listAll/json")
+def listAllJSON():
+    data = collection.find()
+    opens = []
+    closes = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+            closes.append(datum['close'])
+    html = "<html><body><p>{</br></br>"
+    for i in range(len(opens)):
+        if i < len(opens) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '",</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '",</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
+    return html
+
+@app.route("/listOpenOnly/json")
+def listOpenOnlyJSON():
+    k = request.args.get('top', default = 999, type = int)
+    data = collection.find()
+    opens = []
+    for datum in data:
+        if len(datum['open']) > 0: # Ignore it if it's a blank one
+            opens.append(datum['open'])
+    if k != 999:
+        opens.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>{</br></br>"
+    for i in range(len(opens)):
+        if k == i:
+            break
+        if i < len(opens) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
+    return html
+
+@app.route("/listCloseOnly/json")
+def listCloseOnlyJSON():
+    k = request.args.get('top', default = 999, type = int)
+    data = collection.find()
+    closes = []
+    for datum in data:
+        if len(datum['close']) > 0: # Ignore it if it's a blank one
+            closes.append(datum['close'])
+    if k != 999:
+        closes.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>{</br></br>"
+    for i in range(len(closes)):
+        if k == i:
+            break
+        if i < len(closes) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
+    return html
+
 
 #############
 
