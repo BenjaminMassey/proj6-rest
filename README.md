@@ -51,6 +51,6 @@ Same base as project 6, but added different extensions to list data from the dat
 2. Create a collection in that database called "times"
 3. Create a credentials.ini based on credentials-skel.ini
 4. Run everything with "docker-compose up"
-6. Fill up calculator (http://<host>:<port>/)
+6. Fill up calculator (http://HOST:PORT/)
 7. Submit to your database ("Submit" button on bottom of page)
-8. Get the format you want! (http://<host>:<port>/<extension>/)
+8. Get the format you want! (http://HOST:PORT/EXTENSION/)
