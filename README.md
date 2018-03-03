@@ -4,26 +4,46 @@ Same base as project 6, but added different extensions to list data from the dat
 
 ## Extensions
 
-- /listAll/csv
-list all of the open and close times in a csv format
-- /listAll/json
-list all of the open and close times in a json format
-- /listOpenOnly/csv
-list only the open times in a csv format
-- /listOpenOnly/json
-list only the open times in a json format
-- /listOpenOnly/csv?top=k
-list only the top k open times in a csv format
-- /listOpenOnly/json?top=k
-list only the top k open times in a json format
-- /listCloseOnly/csv
-list only the close times in a csv format
-- /listCloseOnly/json
-list only the close times in a json format
-- /listCloseOnly/csv?top=k
-list only the top k close times in a csv format
-- /listCloseOnly/json?top=k
-list only the top k close times in a json format
+/listAll/csv
+
+- list all of the open and close times in a csv format
+
+/listAll/json
+
+- list all of the open and close times in a json format
+
+/listOpenOnly/csv
+
+- list only the open times in a csv format
+
+/listOpenOnly/json
+
+- list only the open times in a json format
+
+/listOpenOnly/csv?top=k
+
+- list only the top k open times in a csv format
+
+/listOpenOnly/json?top=k
+
+- list only the top k open times in a json format
+
+/listCloseOnly/csv
+
+- list only the close times in a csv format
+
+/listCloseOnly/json
+
+- list only the close times in a json format
+
+/listCloseOnly/csv?top=k
+
+- list only the top k close times in a csv format
+
+/listCloseOnly/json?top=k
+
+- list only the top k close times in a json format
+
 
 # Usage
 
