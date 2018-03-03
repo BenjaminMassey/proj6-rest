@@ -8,12 +8,17 @@ app = Flask(__name__)
 api = Api(app)
 
 class Laptop(Resource):
+
     def get(self):
         return {
-            'Laptops': ['Mac OS', 'Dell', 
-            'Windozzee',
-	    'Yet another laptop!',
-	    'Yet yet another laptop!'
+            'Laptops': [
+				'I', 
+				'do', 
+				'not',
+				'understand',
+				'what',
+				'you',
+				'want'
             ]
         }
 

@@ -2,7 +2,19 @@ web:
   build: .
   ports:
     - "5000:5000"
-  links:
-    - db
 db:
   image: mongo:3.0.2
+laptop-service:
+  build: ./laptop
+  volumes:
+    - ./laptop:/usr/src/app 
+  ports:
+    - 5001:80  # host:container
+website:
+  image: php:apache
+  volumes:
+    - ./website:/var/www/html
+  ports:
+    - 5002:80
+  links:
+    - laptop-service

@@ -1,10 +1,10 @@
 <html>
     <head>
-        <title>CIS 322 REST-api demo: Laptop list</title>
+        <title>PHP Garbage</title>
     </head>
 
     <body>
-        <h1>List of laptops</h1>
+        <h1>Times</h1>
         <ul>
             <?php
             $json = file_get_contents('http://laptop-service/');

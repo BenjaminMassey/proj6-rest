@@ -26,7 +26,6 @@ client = MongoClient(CONFIG.MONGO_URL)
 db = client.get_default_database()
 collection = db['times']
 
-
 ###
 # Pages
 ###
@@ -126,36 +125,57 @@ def listAll():
         if len(datum['open']) > 0: # Ignore it if it's a blank one
             opens.append(datum['open'])
             closes.append(datum['close'])
-    html = "<html><body><p>"
+    html = "<html><body><p>{</br></br>"
     for i in range(len(opens)):
-        html += " <u>Open</u>: " + opens[i] + " | <u>Close</u>: " + closes[i] + "</br>"
-    html += "</p></body></html>"
+        if i < len(opens) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '",</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '",</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
     return html
 
 @app.route("/listOpenOnly")
 def listOpenOnly():
+    k = request.args.get('top', default = 999, type = int)
     data = collection.find()
     opens = []
     for datum in data:
         if len(datum['open']) > 0: # Ignore it if it's a blank one
             opens.append(datum['open'])
-    html = "<html><body><p>"
+    if k != 999:
+        opens.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>{</br></br>"
     for i in range(len(opens)):
-        html += " <u>Open</u>: " + opens[i] + "</br>"
-    html += "</p></body></html>"
+        if k == i:
+            break
+        if i < len(opens) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"open": "' + opens[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
     return html
 
 @app.route("/listCloseOnly")
 def listCloseOnly():
+    k = request.args.get('top', default = 999, type = int)
     data = collection.find()
     closes = []
     for datum in data:
         if len(datum['close']) > 0: # Ignore it if it's a blank one
             closes.append(datum['close'])
-    html = "<html><body><p>"
+    if k != 999:
+        closes.sort(key=lambda x: datetime.datetime.strptime(x, '%a %m/%d %H:%M'))
+        # https://stackoverflow.com/a/2589484
+    html = "<html><body><p>{</br></br>"
     for i in range(len(closes)):
-        html += " <u>Close</u>: " + closes[i] + "</br>"
-    html += "</p></body></html>"
+        if k == i:
+            break
+        if i < len(closes) - 1:
+            html += '&emsp;{</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;},</br></br>'
+        else:
+            html += '&emsp;{</br>&emsp;&emsp;"close": "' + closes[i] + '"</br>&emsp;}</br></br>'
+    html += "}</p></body></html>"
     return html
 
 @app.route("/listAll/csv")
